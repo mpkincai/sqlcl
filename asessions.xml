@@ -1,0 +1,39 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<aliases>
+   <alias name="asessions">
+      <description>Active Sessions</description>
+      <queries>
+         <query>
+            <sql><![CDATA[
+SELECT c.spid
+     , b.sid
+     , b.serial#
+     , b.username
+     , b.machine
+     , b.program
+     , b.module
+     , b.last_call_et
+     , b.lockwait
+     , round ( a.elapsed_time / DECODE (a.executions, 0, 1, a.executions) / 1000000) time_in_secs
+     , a.executions
+     , a.sql_id
+     , b.sql_child_number
+     , a.sql_profile
+     , a.sql_plan_baseline
+     , a.parsing_schema_name
+     , a.plan_hash_value
+     , substr(a.sql_text,1,64) as sql_part
+  FROM v$process c
+     , v$session b
+  left join v$sql a
+    on a.sql_id = b.sql_id
+   and a.child_number = b.sql_child_number
+ WHERE b.paddr=c.addr
+   and b.status = 'ACTIVE'    
+   and b.type <> 'BACKGROUND'
+   and b.audsid <> SYS_CONTEXT('userenv','sessionid')
+            ]]></sql>
+         </query>
+      </queries>
+   </alias>
+</aliases>

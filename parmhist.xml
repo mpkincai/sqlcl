@@ -1,0 +1,31 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<aliases>
+   <alias name="parmhist">
+      <description/>
+      <queries>
+         <query>
+            <sql><![CDATA[
+SELECT instance_number instance,
+       snap_id,
+       time,
+       parameter_name,
+       old_value,
+       new_value
+  FROM (SELECT a.snap_id,
+               TO_CHAR (end_interval_time, 'DD-MON-YY HH24:MI') TIME,
+               a.instance_number,
+               parameter_name,
+               VALUE as new_value,
+               LAG (parameter_name,1) OVER (PARTITION BY parameter_name, a.instance_number ORDER BY a.snap_id) as old_pname,
+               LAG (VALUE,1) OVER (PARTITION BY parameter_name, a.instance_number ORDER BY a.snap_id) as old_value,
+               DECODE (SUBSTR (parameter_name, 1, 2), '__', 2, 1) calc_flag
+          FROM dba_hist_parameter a, dba_Hist_snapshot b, v$instance v
+         WHERE a.snap_id = b.snap_id
+           AND a.instance_number = b.instance_number)
+ WHERE new_value != old_value
+ ORDER BY 1, 2
+            ]]></sql>
+         </query>
+      </queries>
+   </alias>
+</aliases>

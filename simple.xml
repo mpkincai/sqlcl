@@ -1,0 +1,43 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<aliases>
+   <alias name="logs">
+      <description/>
+      <queries>
+         <query>
+            <sql><![CDATA[select a.group#, a.status, a.blocksize, a.bytes/1024/1024 as size_MB, b.member from v$log a, v$logfile b where a.group# = b.group#]]></sql>
+         </query>
+      </queries>
+   </alias>
+   <alias name="snap">
+      <description/>
+      <queries>
+         <query>
+            <sql><![CDATA[select DBMS_WORKLOAD_REPOSITORY.create_snapshot from dual]]></sql>
+         </query>
+      </queries>
+   </alias>
+   <alias name="switch">
+      <description/>
+      <queries>
+         <query>
+            <sql><![CDATA[alter system switch logfile]]></sql>
+         </query>
+      </queries>
+   </alias>
+   <alias name="awrplan">
+      <description/>
+      <queries>
+         <query>
+            <sql><![CDATA[select * from TABLE(dbms_xplan.display_awr(:sqlid))]]></sql>
+         </query>
+      </queries>
+   </alias>
+   <alias name="who">
+      <description/>
+      <queries>
+         <query>
+            <sql><![CDATA[select lower(name) as database from v$database]]></sql>
+         </query>
+      </queries>
+   </alias>
+</aliases>
